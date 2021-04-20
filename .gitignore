@@ -1,0 +1,6 @@
+example.sql
+app_no_ajax.py
+todoapp.code-workspace
+.venv/
+.vscode/
+__pycache__/
