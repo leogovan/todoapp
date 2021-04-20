@@ -5,12 +5,17 @@
             .hidden {
                 display: none;
             }
+            .button {
+                display: block;
+                margin-top: 10px;
+            }
         </style>
     </head>
     <body>
         <form id="form">
-            <input id="description" type="text" name="description" />
-            <input type="submit" value="Create"/>
+            <input id="description" type="text" name="description" required="required"/>
+            <label>Required field</label>
+            <input class="button" type="submit" value="Create a Todo"/>
         </form>
         <div id="error" class="hidden">Something went wrong!</div>
         <ul id="todos">
@@ -39,6 +44,9 @@
                     liItem.innerHTML = jsonResponse['description'];
                     document.getElementById('todos').appendChild(liItem);
                     document.getElementById('error').className = 'hidden';
+                })
+                .then(function() {
+                    document.getElementById('description').value='';
                 })
                 .catch(function(error) {
                     console.log("Error: " + error);
