@@ -13,7 +13,7 @@
             <input type="submit" value="Create"/>
         </form>
         <div id="error" class="hidden">Something went wrong!</div>
-        <ul>
+        <ul id="todos">
             {% for d in data %}
             <li>{{ d.description }}</li>
             {% endfor %}
