@@ -15,12 +15,10 @@ class Todo(db.Model):
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String, nullable=False)
+    completed = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
         return f'<Todo {self.id} {self.description}>'
-
-# removed as the migration file should take care of this
-# db.create_all()
 
 # Created new route to handle the form input field (routing to the )
 @app.route('/todos/create', methods=['POST'])
