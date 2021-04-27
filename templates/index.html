@@ -28,7 +28,7 @@
         <div id="error" class="hidden">Something went wrong!</div>
         <ul id="todos">
             {% for d in data %}
-            <li><input class="check-completed" type="checkbox" {% if d.completed %} checked {% endif %}/> {{ d.description }}</li>
+            <li><input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %}/> {{ d.description }}</li>
             {% endfor %}
         </ul>
         <script>
@@ -47,8 +47,10 @@
                     // newCompleted as the value of the true/false state of the checkbox element event
                     const newCompleted = e.target.checked;
                     console.log("I am newCompleted: ", newCompleted);
+                    // set todoID as the id of the checkbox item (it's not the event id, but the event gets and displays it I think)
+                    const todoId = e.target.dataset['id'];
                     // use fetch to post this to the db route handler in app.py
-                    fetch('todos/set-completed', {
+                    fetch('/todos/' + todoId + '/set-completed', {
                         method: 'POST',
                         // need to parse the JSON object into a string
                         body: JSON.stringify({
@@ -57,6 +59,13 @@
                         headers: {
                             'Content-Type': 'application/json'
                         }
+                    })
+                    .then(function() {
+                    document.getElementById('description').value='';
+                    })
+                    .catch(function() {
+                        console.log("Error: " + error);
+                        document.getElementById('error').className = '';
                     })
                 }
             }

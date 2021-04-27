@@ -20,7 +20,12 @@ class Todo(db.Model):
     def __repr__(self):
         return f'<Todo {self.id} {self.description}>'
 
-# Created new route to handle the form input field (routing to the )
+"""
+#### Route handlers ###
+"""
+
+# Created new route to handle the text form input field (routing to creating a new record in the todos table)
+# '/todos/create' is setting the definition for the form to connect with
 @app.route('/todos/create', methods=['POST'])
 # function to create a todo item
 def create_todo():
@@ -58,6 +63,28 @@ def create_todo():
     else:
         # return the json data back to the view
         return jsonify(body)
+
+# Created a route to handle the input from the checkbox
+# using <todo_id> with the brackets allows us to parametise that value and use it in our function
+@app.route('/todos/<todo_id>/set-completed', methods=['POST'])
+# functions that passes in the todo_id captured from the checkbox data-id attribute
+def set_completed_todo(todo_id):
+    try:
+        print("I am todo_id", todo_id)
+        # completed is the true/false value captured from the event on the front end
+        completed = request.get_json()['completed']
+        print("I am completed: ", completed)
+        # gets the object from the db by its primary key
+        todo = Todo.query.get(todo_id)
+        # set the object's completed property to the value of the completed variable
+        todo.completed = completed
+        db.session.commit()
+    except:
+        db.session.rollback()
+    finally:
+        db.session.close()
+    #### DO I REALLY WANT TO REFRESH? SURELY I WANT TO AJAX EVERYTHING? ####
+    return redirect(url_for('index'))
 
 
 @app.route('/')
