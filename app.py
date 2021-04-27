@@ -89,4 +89,8 @@ def set_completed_todo(todo_id):
 
 @app.route('/')
 def index():
+    # flask allows us to pass in variables that we want to use in our template
+    # here, we pass in 'data' which stores the list of all todo records
+    # using Jinja, this will pass to index.html
+    print("Lalala", Todo.query.order_by('id').all())
     return render_template('index.html', data=Todo.query.order_by('id').all())

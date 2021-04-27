@@ -39,6 +39,7 @@
         </form>
         <div id="error" class="hidden">Something went wrong!</div>
         <ul id="todos">
+            <!--Here we loop through the data variable that app.py defined, which was passed to index.html by Jinja -->
             {% for d in data %}
             <li>
                 <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} /> 
