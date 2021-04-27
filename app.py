@@ -32,8 +32,8 @@ def create_todo():
     try:
         # targeting the 'description' key in the resulting json
         description = request.get_json()['description']
-        # description is now used to create a new Todo() object
-        todo = Todo(description=description)
+        # description/completed is now used to create a new Todo() object
+        todo = Todo(description=description, completed=False)
         # we use db.session to add that record to the database as it's currently pending
         db.session.add(todo)
         # we need to commit the transaction (flushes and commits)
