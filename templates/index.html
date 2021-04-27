@@ -1,8 +1,23 @@
 <html>
     <head>
         <title>Todo App</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <!--<script src="" type="text/javascript"></script>-->
+        <!--<link rel="stylesheet" href="static/style.css">-->
+        <style>
+            .hidden {
+                display: none;
+            }
+            .button {
+                display: block;
+                margin-top: 20px;
+            }
+
+            ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+        </style>
+        <!--<script src="static/main.js" type="text/javascript"></script>-->
     </head>
     <body>
         <form id="form">
@@ -13,8 +28,83 @@
         <div id="error" class="hidden">Something went wrong!</div>
         <ul id="todos">
             {% for d in data %}
-            <li><input type="checkbox" {% if d.completed %} checked {% endif %}/> {{ d.description }}</li>
+            <li><input class="check-completed" type="checkbox" {% if d.completed %} checked {% endif %}/> {{ d.description }}</li>
             {% endfor %}
         </ul>
+        <script>
+            // ##### code for handling how the checkbox posts updates to the database ####
+            // Get the list of checkboxes returned as a nodelist (array-like object)
+            const checkboxes = document.querySelectorAll('.check-completed');
+            // loop through checkboxes
+            for (let i = 0; i < checkboxes.length; i++) {
+                // set the value of checkbox as the indexed (i) element of the checkboxes nodelist
+                const checkbox = checkboxes[i];
+                // since checkobox is a form element, we can use the onchange event to set a function
+                // (e) is the event objet in this case, passed into the function
+                // Event objects have properties that we can access and manipulate
+                checkbox.onchange = function(e) {
+                    console.log('event', e);
+                    // newCompleted as the value of the true/false state of the checkbox element event
+                    const newCompleted = e.target.checked;
+                    console.log("I am newCompleted: ", newCompleted);
+                    // use fetch to post this to the db route handler in app.py
+                    fetch('todos/set-completed', {
+                        method: 'POST',
+                        // need to parse the JSON object into a string
+                        body: JSON.stringify({
+                            'completed': newCompleted
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                }
+            }
+
+            // ##### code for handling how the textbox posts data to the database ####
+            // grab the #form element
+            document.getElementById('form').onsubmit = function(e) {
+                // standard way to prevent the default event behaviour
+                // submit would try and put it somewhere... we want to interfere with that
+                e.preventDefault();
+                // use fetch to post this to the db route handler in app.py
+                fetch('/todos/create', {
+                    method: 'POST',
+                    // need to parse the JSON object into a string
+                    body: JSON.stringify({
+                        'description': document.getElementById('description').value
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                // take the fetch() response as an input into .then() and turn it into json
+                .then(function(response) {
+                    console.log("I am response: ", response);
+                    return response.json();
+                })
+                // take the result of the previous .then() and use the value of 'description'
+                .then(function(jsonResponse) {
+                    console.log("I am jsonResponse: ", jsonResponse);
+                    // create an <li> element
+                    let liItem = document.createElement('li');
+                    // set the content as the value of 'description'
+                    liItem.innerHTML = jsonResponse['description'];
+                    // append this onto the list
+                    document.getElementById('todos').appendChild(liItem);
+                    // ensure the error class is set to hidden as things should be ok if we got to here
+                    document.getElementById('error').className = 'hidden';
+                })
+                // clear the description field of any text content left by the input
+                .then(function() {
+                    document.getElementById('description').value='';
+                })
+                // catch() to show the error element in case something went wrong
+                .catch(function(error) {
+                    console.log("Error: " + error);
+                    document.getElementById('error').className = '';
+                })
+            }
+        </script>
     </body>
 </html>
