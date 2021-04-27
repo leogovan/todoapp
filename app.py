@@ -89,4 +89,4 @@ def set_completed_todo(todo_id):
 
 @app.route('/')
 def index():
-    return render_template('index.html', data=Todo.query.all())
+    return render_template('index.html', data=Todo.query.order_by('id').all())
