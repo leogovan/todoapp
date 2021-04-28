@@ -88,6 +88,13 @@
                             'Content-Type': 'application/json'
                         }
                     })
+                    .then(function() {
+                        const buttonHTML = document.querySelector('.delete-record[data-id="' + buttonId + '"]');
+                        console.log('buttonHTML', buttonHTML);
+                        parentElement = buttonHTML.parentElement
+                        console.log('parentElement', parentElement);
+                        parentElement.remove();
+                    })
                 });
             }
 
@@ -149,7 +156,7 @@
                 })
                 // take the fetch() response as an input into .then() and turn it into json
                 .then(function(response) {
-                    console.log("I am response: ", response);
+                    console.log("I am create response: ", response);
                     return response.json();
                 })
                 // take the result of the previous .then() and use the value of 'description'
