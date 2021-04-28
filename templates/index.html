@@ -76,9 +76,8 @@
             for (let i = 0; i < deleteButtonList.length; i++) {
                 const deleteButton = deleteButtonList[i];
                 deleteButton.addEventListener('click', function(e) {
-                    console.log(e);
+                    console.log('delete event', e);
                     const buttonId = e.target.dataset['id'];
-                    console.log('buttonId', buttonId);
                     fetch('/todos/' + buttonId + '/delete-record', {
                         method: 'POST',
                         body: JSON.stringify({
@@ -92,7 +91,6 @@
                     .then(function() {
                         // gets the delete button element by using the data-id attribute
                         const buttonHTML = document.querySelector('.delete-record[data-id="' + buttonId + '"]');
-                        console.log('buttonHTML', buttonHTML);
                         // gets the parent li element of that button element and deletes it
                         // means that all the other elements inside are also removed! :)
                         buttonHTML.parentElement.remove();
@@ -118,13 +116,11 @@
                 // (e) is the event objet in this case, passed into the function
                 // Event objects have properties that we can access and manipulate
                 checkbox.onchange = function(e) {
-                    console.log('onchange event', e);
+                    console.log('checkbox event', e);
                     // newCompleted as the value of the true/false state of the checkbox element event
                     const newCompleted = e.target.checked;
-                    console.log("I am newCompleted: ", newCompleted);
                     // set todoID as the id of the checkbox item (it's not the event id, but the event gets and displays it I think)
                     const todoId = e.target.dataset['id'];
-                    console.log('todoID', todoId);
                     // use fetch to post this to the db route handler in app.py
                     fetch('/todos/' + todoId + '/set-completed', {
                         method: 'POST',
@@ -152,7 +148,7 @@
                 // standard way to prevent the default event behaviour
                 // submit would try and put it somewhere... we want to interfere with that
                 e.preventDefault();
-                console.log('onclick event', e);
+                console.log('submit form event', e);
                 // use fetch to post this to the db route handler in app.py
                 fetch('/todos/create', {
                     method: 'POST',
@@ -189,7 +185,6 @@
                     inputItem.type = "checkbox";
                     // insert the checkbox as the first child item of liItem
                     liItem.prepend(inputItem);
-                    console.log('inputItem', inputItem);
                     const buttonItem = document.createElement('button');
                     buttonItem.className = "delete-record";
                     buttonItem.setAttribute('data-id' , jsonResponse['id']);
