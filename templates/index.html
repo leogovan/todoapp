@@ -13,12 +13,13 @@
             }
             li {
                 clear: both;
+                font-size: 20px;
             }
             ul {
                 list-style: none;
                 padding: 0;
                 margin: 0;
-                width: 200px;
+                width: 300px;
             }
             li button {
                 -webkit-appearance: none;
@@ -70,7 +71,6 @@
         <script>
             // ##### code for handling how the delete button removes a record from the database ####
             const deleteButtonList = document.querySelectorAll('.delete-record');
-            console.log(deleteButtonList);
             
             // loop through the nodelist and add event listener to each element
             for (let i = 0; i < deleteButtonList.length; i++) {
@@ -118,7 +118,7 @@
                 // (e) is the event objet in this case, passed into the function
                 // Event objects have properties that we can access and manipulate
                 checkbox.onchange = function(e) {
-                    console.log('event', e);
+                    console.log('onchange event', e);
                     // newCompleted as the value of the true/false state of the checkbox element event
                     const newCompleted = e.target.checked;
                     console.log("I am newCompleted: ", newCompleted);
@@ -152,6 +152,7 @@
                 // standard way to prevent the default event behaviour
                 // submit would try and put it somewhere... we want to interfere with that
                 e.preventDefault();
+                console.log('onclick event', e);
                 // use fetch to post this to the db route handler in app.py
                 fetch('/todos/create', {
                     method: 'POST',
@@ -165,20 +166,35 @@
                 })
                 // take the fetch() response as an input into .then() and turn it into json
                 .then(function(response) {
-                    console.log("I am create response: ", response);
                     return response.json();
                 })
                 // take the result of the previous .then() and use the value of 'description'
                 .then(function(jsonResponse) {
-                    console.log("I am jsonResponse: ", jsonResponse);
                     // create an <li> element
                     let liItem = document.createElement('li');
                     // set the content as the value of 'description'
-                    liItem.innerHTML = jsonResponse['description'];
+                    liItem.innerHTML = " " + jsonResponse['description'];
                     // append this onto the list
                     document.getElementById('todos').appendChild(liItem);
                     // ensure the error class is set to hidden as things should be ok if we got to here
                     document.getElementById('error').className = 'hidden';
+                    // ########## Code to add checkbox to the newly created todo without refresh ########## //
+                    // create an inout element
+                    const inputItem = document.createElement('input');
+                    // add a class name
+                    inputItem.className = "check-completed";
+                    // set the data-id attribute using the 'id' in jsonResponse (this was given back to us from the create route handler)
+                    inputItem.setAttribute('data-id' , jsonResponse['id']);
+                    // define its type
+                    inputItem.type = "checkbox";
+                    // insert the checkbox as the first child item of liItem
+                    liItem.prepend(inputItem);
+                    console.log('inputItem', inputItem);
+                    const buttonItem = document.createElement('button');
+                    buttonItem.className = "delete-record";
+                    buttonItem.setAttribute('data-id' , jsonResponse['id']);
+                    buttonItem.innerHTML = "&cross;";
+                    liItem.appendChild(buttonItem);
                 })
                 // clear the description field of any text content left by the input
                 .then(function() {

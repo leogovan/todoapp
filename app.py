@@ -43,18 +43,22 @@ def create_todo():
     body = {}
     # try/except block to handle possible expected exceptions
     try:
-        # targeting the 'description' key in the resulting json
+        # targeting the 'description' key in the resulting json that comes from the front end POST
         description = request.get_json()['description']
         # description/completed is now used to create a new Todo() object
         todo = Todo(description=description, completed=False)
         # we use db.session to add that record to the database as it's currently pending
         db.session.add(todo)
+        # before the transaction is committed, we can flush this and get the TOBE record id... we couldn't do this until now
+        db.session.flush()
+        # store the record's id
+        todo_id = todo.id
         # we need to commit the transaction (flushes and commits)
         db.session.commit()
-        print("body before", body)
-        # set the key/value of body to be {description: todo.description}
+        # set a key/value of body to be {description: todo.description}
         body['description'] = todo.description
-        print("body after", body)
+        # set a key/value of body to be {id: todo_id}
+        body['id'] = todo_id
     except:
         # set error to True if issue is raised
         error = True
@@ -70,6 +74,7 @@ def create_todo():
         abort(400)
     else:
         # return the json data back to the view
+        print('I am body before being returned to the view', body)
         return jsonify(body)
 
 
@@ -82,10 +87,8 @@ def create_todo():
 # functions that passes in the todo_id captured from the checkbox data-id attribute
 def set_completed_todo(todo_id):
     try:
-        print("todo_id", todo_id)
         # completed is the true/false value captured from the event on the front end
         completed = request.get_json()['completed']
-        print("completed: ", completed)
         # gets the object from the db by its primary key
         todo = Todo.query.get(todo_id)
         # set the object's completed property to the value of the completed variable
@@ -104,8 +107,7 @@ def set_completed_todo(todo_id):
 
 @app.route('/todos/<button_id>/delete-record', methods=['POST'])
 def delete_record(button_id):
-    try:        
-        delete = request.get_json()['id']
+    try:
         todo = Todo.query.get(button_id)
         db.session.delete(todo)
         db.session.commit()
@@ -125,5 +127,4 @@ def index():
     # flask allows us to pass in variables that we want to use in our template
     # here, we pass in 'data' which stores the list of all todo records
     # using Jinja, this will pass to index.html
-    print("Lalala", Todo.query.order_by('id').all())
     return render_template('index.html', data=Todo.query.order_by('id').all())
