@@ -105,11 +105,8 @@ def set_completed_todo(todo_id):
 @app.route('/todos/<button_id>/delete-record', methods=['POST'])
 def delete_record(button_id):
     try:        
-        print("button_id: ", button_id)
         delete = request.get_json()['id']
-        print("deleted: ", delete)
         todo = Todo.query.get(button_id)
-        print('todo:', todo)
         db.session.delete(todo)
         db.session.commit()
     except:

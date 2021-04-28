@@ -29,25 +29,44 @@
                 cursor: pointer;
                 font-size: 20px;
             }
+            .lists-wrapper, .todos-wrapper {
+                display: inline-block;
+                vertical-align: top;
+            }
         </style>
     </head>
     <body>
-        <form id="form">
-            <input id="description" type="text" name="description" required="required"/>
-            <label>Required field</label>
-            <input class="button" type="submit" value="Create a Todo"/>
-        </form>
-        <div id="error" class="hidden">Something went wrong!</div>
-        <ul id="todos">
-            <!--Here we loop through the data variable that app.py defined, which was passed to index.html by Jinja -->
-            {% for d in data %}
-            <li>
-                <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} /> 
-                {{ d.description }}
-                <button class="delete-record" data-id="{{ d.id }}">&cross;</button>
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="lists-wrapper">
+            <ul id="lists">
+                {% for list in lists %}
+                <li>
+                    <a href="/lists/{{ list.id }}">
+                    {{ list.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="todos-wrapper">
+            {# <h4>{{ active_list.name }}</h4> #}
+            <form id="form">
+                <input id="description" type="text" name="description" required="required"/>
+                <label>Required field</label>
+                <input class="button" type="submit" value="Create a Todo"/>
+            </form>
+            <div id="error" class="hidden">Something went wrong!</div>
+            <ul id="todos">
+                <!--Here we loop through the data variable that app.py defined, which was passed to index.html by Jinja -->
+                {% for d in data %}
+                <li>
+                    <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} /> 
+                    {{ d.description }}
+                    <button class="delete-record" data-id="{{ d.id }}">&cross;</button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <!-------- ################## Javascript ################## ---------->
         <script>
             // ##### code for handling how the delete button removes a record from the database ####
             const deleteButtonList = document.querySelectorAll('.delete-record');
@@ -69,15 +88,8 @@
                             'Content-Type': 'application/json'
                         }
                     })
-
-
                 });
-
             }
-            
-            
-            
-
 
             // ##### code for handling how the checkbox posts updates to the database ####
             // Get the list of checkboxes returned as a nodelist (array-like object)
@@ -109,7 +121,7 @@
                         }
                     })
                     .then(function() {
-                    document.getElementById('description').value='';
+                        document.getElementById('error').className = 'hidden';
                     })
                     .catch(function() {
                         console.log("Error: " + error);
