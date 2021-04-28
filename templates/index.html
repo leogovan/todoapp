@@ -88,12 +88,21 @@
                             'Content-Type': 'application/json'
                         }
                     })
+                    // function to remove the todo record from the view without page refresh
                     .then(function() {
+                        // gets the delete button element by using the data-id attribute
                         const buttonHTML = document.querySelector('.delete-record[data-id="' + buttonId + '"]');
                         console.log('buttonHTML', buttonHTML);
-                        parentElement = buttonHTML.parentElement
-                        console.log('parentElement', parentElement);
-                        parentElement.remove();
+                        // gets the parent li element of that button element and deletes it
+                        // means that all the other elements inside are also removed! :)
+                        buttonHTML.parentElement.remove();
+                    })
+                    .then(function() {
+                        document.getElementById('error').className = 'hidden';
+                    })
+                    .catch(function() {
+                        console.log("Error: " + error);
+                        document.getElementById('error').className = '';
                     })
                 });
             }
