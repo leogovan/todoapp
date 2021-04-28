@@ -21,7 +21,15 @@ class Todo(db.Model):
         return f'<Todo {self.id} {self.description}>'
 
 """
-#### Route handlers ###
+################################
+
+######## Route handlers ########
+
+################################
+"""
+
+"""
+######## Create Record Router ########
 """
 
 # Created new route to handle the text form input field (routing to creating a new record in the todos table)
@@ -43,10 +51,10 @@ def create_todo():
         db.session.add(todo)
         # we need to commit the transaction (flushes and commits)
         db.session.commit()
-        print("I am body before", body)
+        print("body before", body)
         # set the key/value of body to be {description: todo.description}
         body['description'] = todo.description
-        print("I am body after", body)
+        print("body after", body)
     except:
         # set error to True if issue is raised
         error = True
@@ -64,16 +72,20 @@ def create_todo():
         # return the json data back to the view
         return jsonify(body)
 
+
+"""
+######## Update Record Router ########
+"""
 # Created a route to handle the input from the checkbox
 # using <todo_id> with the brackets allows us to parametise that value and use it in our function
 @app.route('/todos/<todo_id>/set-completed', methods=['POST'])
 # functions that passes in the todo_id captured from the checkbox data-id attribute
 def set_completed_todo(todo_id):
     try:
-        print("I am todo_id", todo_id)
+        print("todo_id", todo_id)
         # completed is the true/false value captured from the event on the front end
         completed = request.get_json()['completed']
-        print("I am completed: ", completed)
+        print("completed: ", completed)
         # gets the object from the db by its primary key
         todo = Todo.query.get(todo_id)
         # set the object's completed property to the value of the completed variable
@@ -86,6 +98,30 @@ def set_completed_todo(todo_id):
     #### DO I REALLY WANT TO REFRESH? SURELY I WANT TO AJAX EVERYTHING? ####
     return redirect(url_for('index'))
 
+"""
+######## Delete Record Router ########
+"""
+
+@app.route('/todos/<button_id>/delete-record', methods=['POST'])
+def delete_record(button_id):
+    try:        
+        print("button_id: ", button_id)
+        delete = request.get_json()['id']
+        print("deleted: ", delete)
+        todo = Todo.query.get(button_id)
+        print('todo:', todo)
+        db.session.delete(todo)
+        db.session.commit()
+    except:
+        db.session.rollback()
+    finally:
+        db.session.close()
+    return redirect(url_for('index'))
+
+
+"""
+######## Read Records Router ########
+"""
 
 @app.route('/')
 def index():
