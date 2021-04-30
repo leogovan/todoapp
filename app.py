@@ -11,14 +11,38 @@ db = SQLAlchemy(app)
 # links to instance of our Flask app and our SQLAlchemy database
 migrate = Migrate(app, db)
 
+"""
+################################
+
+######### Class Models #########
+
+################################
+"""
+
 class Todo(db.Model):
+    """
+    Class to create a Todo item record in the DB.
+    Items will hold the reference back to the parent TodoList.
+    """
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String, nullable=False)
     completed = db.Column(db.Boolean, nullable=False)
+    list_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=False)
 
     def __repr__(self):
         return f'<Todo {self.id} {self.description}>'
+
+
+class TodoList(db.Model):
+    """
+    Class to create a list that will have Todo items related to it in the DB.
+    """
+    __tablename__ = 'todolists'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
+    todos = db.relationship('Todo', backref='list', lazy=True)
+
 
 """
 ################################
