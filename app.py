@@ -149,9 +149,21 @@ def delete_record(button_id):
 ######## Read Records Router ########
 """
 
+@app.route('/lists/<list_id>')
+def get_list_todos(list_id):
+    # flask allows us to pass in variables that we want to use in our template
+    # here, we pass in 'todo' (it could be called anything) which stores the list of all todo records
+    # using Jinja, this will pass to index.html
+    return render_template('index.html', 
+    # render the list of lists
+    lists=TodoList.query.all(),
+    active_list=TodoList.query.get(list_id),
+    # render the data for the todo items in the list
+    todos=Todo.query.filter_by(list_id=list_id).order_by('id').all())
+
+
+# the index route has been updaed to redirect to get_list_todos()
+# also uses list_id=1 just to set the loading default of which list to populate first
 @app.route('/')
 def index():
-    # flask allows us to pass in variables that we want to use in our template
-    # here, we pass in 'data' which stores the list of all todo records
-    # using Jinja, this will pass to index.html
-    return render_template('index.html', data=Todo.query.order_by('id').all())
+    return redirect(url_for('get_list_todos', list_id=1))

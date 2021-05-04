@@ -19,7 +19,7 @@
                 list-style: none;
                 padding: 0;
                 margin: 0;
-                width: 300px;
+                width: 400px;
             }
             li button {
                 -webkit-appearance: none;
@@ -38,9 +38,11 @@
     </head>
     <body>
         <div class="lists-wrapper">
+            <!-- Renders a list of lists, coming from the flask route handler -->
             <ul id="lists">
                 {% for list in lists %}
                 <li>
+                    <!-- wrap each list name in a url for the list id -->
                     <a href="/lists/{{ list.id }}">
                     {{ list.name }}
                     </a>
@@ -49,20 +51,23 @@
             </ul>
         </div>
         <div class="todos-wrapper">
-            {# <h4>{{ active_list.name }}</h4> #}
+            <!-- Active list name is passed through the route handler (it passes the list object using 
+                the active_list varaiable and we can grab the .name) -->
+            <h4>{{ active_list.name }}</h4>
             <form id="form">
                 <input id="description" type="text" name="description" required="required"/>
                 <label>Required field</label>
                 <input class="button" type="submit" value="Create a Todo"/>
             </form>
             <div id="error" class="hidden">Something went wrong!</div>
+            <!-- Renders a list of the todos, coming from the flask route handler -->
             <ul id="todos">
-                <!--Here we loop through the data variable that app.py defined, which was passed to index.html by Jinja -->
-                {% for d in data %}
+                <!--Here we loop through the todos variable that app.py defined, which was passed to index.html by Jinja -->
+                {% for todo in todos %}
                 <li>
-                    <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} /> 
-                    {{ d.description }}
-                    <button class="delete-record" data-id="{{ d.id }}">&cross;</button>
+                    <input class="check-completed" data-id="{{ todo.id }}" type="checkbox" {% if todo.completed %} checked {% endif %} /> 
+                    {{ todo.description }}
+                    <button class="delete-record" data-id="{{ todo.id }}">&cross;</button>
                 </li>
                 {% endfor %}
             </ul>
